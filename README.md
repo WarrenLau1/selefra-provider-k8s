@@ -20,10 +20,6 @@ Selefra is a community driven project,we welcome you to file a bug,suggest an im
 -  Follow us on [Twitter](https://twitter.com/SelefraCorp) and shard Selefra messages on Twitter.
 -  Have question and feature?Now on [Slack](https://selefra.slack.com) or open a [GitHub Issue](https://github.com/selefra/selefra/issues/new/choose)
 
-## Contributing
-
-To contribute, visit [Contributing.md](https://github.com/selefra/selefra/blob/main/CONTRIBUTING.md) and [Selefra roadmap](https://github/com/selefra/projects/1)
-
 ## License
 
 [Mozilla Public License v2.0](https://github.com/selefra/selefra/blob/main/LICENSE)
