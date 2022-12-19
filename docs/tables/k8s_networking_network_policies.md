@@ -11,24 +11,24 @@ uid
 
 |  Column Name   |  Data Type  | Uniq | Nullable | Description | 
 |  ----  | ----  | ----  | ----  | ---- | 
-| generation | int | X | √ |  | 
-| spec_ingress | json | X | √ |  | 
-| name | string | X | √ |  | 
-| owner_references | json | X | √ |  | 
-| kind | string | X | √ |  | 
+| api_version | string | X | √ |  | 
 | deletion_grace_period_seconds | int | X | √ |  | 
 | finalizers | string_array | X | √ |  | 
-| spec_pod_selector | json | X | √ |  | 
-| selefra_id | string | √ | √ | primary keys value md5 | 
-| resource_version | string | X | √ |  | 
-| uid | string | √ | √ |  | 
-| api_version | string | X | √ |  | 
-| namespace | string | X | √ |  | 
-| labels | json | X | √ |  | 
-| annotations | json | X | √ |  | 
-| spec_egress | json | X | √ |  | 
-| spec_policy_types | string_array | X | √ |  | 
 | context | string | X | √ |  | 
+| kind | string | X | √ |  | 
+| namespace | string | X | √ |  | 
+| resource_version | string | X | √ |  | 
+| generation | int | X | √ |  | 
+| spec_policy_types | string_array | X | √ |  | 
 | status_conditions | json | X | √ |  | 
+| uid | string | √ | √ |  | 
+| owner_references | json | X | √ |  | 
+| spec_egress | json | X | √ |  | 
+| annotations | json | X | √ |  | 
+| labels | json | X | √ |  | 
+| spec_pod_selector | json | X | √ |  | 
+| spec_ingress | json | X | √ |  | 
+| selefra_id | string | √ | √ | primary keys value md5 | 
+| name | string | X | √ |  | 
 
 

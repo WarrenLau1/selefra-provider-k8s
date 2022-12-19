@@ -11,20 +11,20 @@ uid
 
 |  Column Name   |  Data Type  | Uniq | Nullable | Description | 
 |  ----  | ----  | ----  | ----  | ---- | 
-| context | string | X | √ |  | 
-| annotations | json | X | √ |  | 
-| selefra_id | string | √ | √ | primary keys value md5 | 
-| spec_limits | json | X | √ |  | 
-| kind | string | X | √ |  | 
+| name | string | X | √ |  | 
 | generation | int | X | √ |  | 
 | labels | json | X | √ |  | 
 | owner_references | json | X | √ |  | 
-| deletion_grace_period_seconds | int | X | √ |  | 
-| finalizers | string_array | X | √ |  | 
-| resource_version | string | X | √ |  | 
+| spec_limits | json | X | √ |  | 
+| context | string | X | √ |  | 
 | uid | string | √ | √ |  | 
-| api_version | string | X | √ |  | 
-| name | string | X | √ |  | 
 | namespace | string | X | √ |  | 
+| finalizers | string_array | X | √ |  | 
+| kind | string | X | √ |  | 
+| api_version | string | X | √ |  | 
+| resource_version | string | X | √ |  | 
+| deletion_grace_period_seconds | int | X | √ |  | 
+| annotations | json | X | √ |  | 
+| selefra_id | string | √ | √ | primary keys value md5 | 
 
 
