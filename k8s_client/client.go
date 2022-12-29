@@ -13,11 +13,11 @@ import (
 )
 
 type Client struct {
-	services	map[string]K8sServices
-	contexts	[]string
-	paths		map[string]struct{}
+	services map[string]K8sServices
+	contexts []string
+	paths    map[string]struct{}
 
-	Context	string
+	Context string
 }
 
 func (c *Client) K8sServices() K8sServices {
@@ -26,10 +26,10 @@ func (c *Client) K8sServices() K8sServices {
 
 func (c Client) CopyWithContext(k8sContext string) *Client {
 	return &Client{
-		services:	c.services,
-		contexts:	c.contexts,
-		paths:		c.paths,
-		Context:	k8sContext,
+		services: c.services,
+		contexts: c.contexts,
+		paths:    c.paths,
+		Context:  k8sContext,
 	}
 }
 
@@ -42,11 +42,17 @@ func (c *Client) SetServices(s map[string]K8sServices) {
 	c.contexts = contexts
 }
 
-func NewClient(ctx context.Context, k8sContextSlice []string) (*Client, error) {
-
+func NewClient(ctx context.Context, k8sConfigFile string, k8sContextSlice []string) (*Client, error) {
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	loadingRules.DefaultClientConfig = &clientcmd.DefaultClientConfig
+	loadingRules.ExplicitPath = k8sConfigFile
+	configOverrides := &clientcmd.ConfigOverrides{
+		//ClusterDefaults: clientcmd.ClusterDefaults,
+		//CurrentContext:  "", // or "current-context name"
+	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		clientcmd.NewDefaultClientConfigLoadingRules(),
-		&clientcmd.ConfigOverrides{},
+		loadingRules,
+		configOverrides,
 	)
 	rawKubeConfig, err := kubeConfig.RawConfig()
 	if err != nil {
@@ -82,10 +88,10 @@ func NewClient(ctx context.Context, k8sContextSlice []string) (*Client, error) {
 	}
 
 	c := Client{
-		services:	make(map[string]K8sServices),
-		contexts:	contexts,
-		Context:	contexts[0],
-		paths:		make(map[string]struct{}),
+		services: make(map[string]K8sServices),
+		contexts: contexts,
+		Context:  contexts[0],
+		paths:    make(map[string]struct{}),
 	}
 
 	for _, ctxName := range contexts {
@@ -134,23 +140,23 @@ func getAPIsMap(client *kubernetes.Clientset) (map[string]struct{}, error) {
 
 func initServices(client *kubernetes.Clientset) K8sServices {
 	return K8sServices{
-		Client:			client,
-		CronJobs:		client.BatchV1().CronJobs(""),
-		DaemonSets:		client.AppsV1().DaemonSets(""),
-		Deployments:		client.AppsV1().Deployments(""),
-		Endpoints:		client.CoreV1().Endpoints(""),
-		Jobs:			client.BatchV1().Jobs(""),
-		LimitRanges:		client.CoreV1().LimitRanges(""),
-		Namespaces:		client.CoreV1().Namespaces(),
-		NetworkPolicies:	client.NetworkingV1().NetworkPolicies(""),
-		Nodes:			client.CoreV1().Nodes(),
-		Pods:			client.CoreV1().Pods(""),
-		ReplicaSets:		client.AppsV1().ReplicaSets(""),
-		ResourceQuotas:		client.CoreV1().ResourceQuotas(""),
-		RoleBindings:		client.RbacV1().RoleBindings(""),
-		Roles:			client.RbacV1().Roles(""),
-		ServiceAccounts:	client.CoreV1().ServiceAccounts(""),
-		K8sServices:		client.CoreV1().Services(""),
-		StatefulSets:		client.AppsV1().StatefulSets(""),
+		Client:          client,
+		CronJobs:        client.BatchV1().CronJobs(""),
+		DaemonSets:      client.AppsV1().DaemonSets(""),
+		Deployments:     client.AppsV1().Deployments(""),
+		Endpoints:       client.CoreV1().Endpoints(""),
+		Jobs:            client.BatchV1().Jobs(""),
+		LimitRanges:     client.CoreV1().LimitRanges(""),
+		Namespaces:      client.CoreV1().Namespaces(),
+		NetworkPolicies: client.NetworkingV1().NetworkPolicies(""),
+		Nodes:           client.CoreV1().Nodes(),
+		Pods:            client.CoreV1().Pods(""),
+		ReplicaSets:     client.AppsV1().ReplicaSets(""),
+		ResourceQuotas:  client.CoreV1().ResourceQuotas(""),
+		RoleBindings:    client.RbacV1().RoleBindings(""),
+		Roles:           client.RbacV1().Roles(""),
+		ServiceAccounts: client.CoreV1().ServiceAccounts(""),
+		K8sServices:     client.CoreV1().Services(""),
+		StatefulSets:    client.AppsV1().StatefulSets(""),
 	}
 }

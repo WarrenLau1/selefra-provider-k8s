@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
+	"strings"
 
 	"github.com/selefra/selefra-provider-sdk/provider"
 	"github.com/selefra/selefra-provider-sdk/provider/schema"
@@ -13,13 +14,21 @@ const Version = "v0.0.1"
 
 func GetProvider() *provider.Provider {
 	return &provider.Provider{
-		Name:		"k8s",
-		Version:	Version,
-		TableList:	GenTables(),
+		Name:      "k8s",
+		Version:   Version,
+		TableList: GenTables(),
 		ClientMeta: schema.ClientMeta{
 			InitClient: func(ctx context.Context, clientMeta *schema.ClientMeta, config *viper.Viper) ([]any, *schema.Diagnostics) {
 
-				client, err := k8s_client.NewClient(ctx, nil)
+				diagnostics := schema.NewDiagnostics()
+
+				k8sConfigPath := config.GetString("providers.0.config-path")
+				if k8sConfigPath != "" {
+					if !strings.HasPrefix(k8sConfigPath, "/") && !strings.HasPrefix(k8sConfigPath, "./") {
+						return nil, diagnostics.AddErrorMsg("config-path must start with / or ./, %s is not ok", k8sConfigPath)
+					}
+				}
+				client, err := k8s_client.NewClient(ctx, k8sConfigPath, nil)
 				if err != nil {
 					return nil, schema.NewDiagnostics().AddError(err)
 				}
@@ -28,10 +37,9 @@ func GetProvider() *provider.Provider {
 		},
 		ConfigMeta: provider.ConfigMeta{
 			GetDefaultConfigTemplate: func(ctx context.Context) string {
-				return `#    The maximum number of times that a request will be retried for failures. Defaults to 10 retry attempts.
-max_attempts: 10
-#    The maximum back off delay between attempts. The backoff delays exponentially with a jitter based on the number of attempts. Defaults to 30 seconds.
-max_backoff: 30`
+				return `#providers:
+#    - name: k8s
+#      config-path: `
 			},
 			Validation: func(ctx context.Context, config *viper.Viper) *schema.Diagnostics {
 				return nil
@@ -41,7 +49,7 @@ max_backoff: 30`
 			DefaultColumnValueConvertorBlackList: []string{
 				"",
 			},
-			DataSourcePullResultAutoExpand:	true,
+			DataSourcePullResultAutoExpand: true,
 		},
 		ErrorsHandlerMeta: schema.ErrorsHandlerMeta{
 			IgnoredErrors: []schema.IgnoredError{schema.IgnoredErrorOnSaveResult},
