@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/golang/mock v1.6.0
 	github.com/rs/zerolog v1.28.0
-	github.com/selefra/selefra-provider-sdk v0.0.17-0.20230104103807-4168b56d84a2
+	github.com/selefra/selefra-provider-sdk v0.0.17
 	github.com/selefra/selefra-utils v0.0.2
 	github.com/songzhibin97/go-ognl v0.0.2
 	github.com/spf13/viper v1.13.0
