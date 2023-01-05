@@ -22,7 +22,8 @@ func GetProvider() *provider.Provider {
 
 				diagnostics := schema.NewDiagnostics()
 
-				k8sConfigPath := config.GetString("providers.0.config-path")
+				//k8sConfigPath := config.GetString("providers.0.config-path")
+				k8sConfigPath := config.GetString("config-path")
 				if k8sConfigPath != "" {
 					if !strings.HasPrefix(k8sConfigPath, "/") && !strings.HasPrefix(k8sConfigPath, "./") {
 						return nil, diagnostics.AddErrorMsg("config-path must start with / or ./, %s is not ok", k8sConfigPath)
