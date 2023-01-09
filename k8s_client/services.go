@@ -13,25 +13,26 @@ import (
 )
 
 type K8sServices struct {
-	Client	*kubernetes.Clientset
+	Client *kubernetes.Clientset
 
-	CronJobs	CronJobsClient
-	DaemonSets	DaemonSetsClient
-	Deployments	DeploymentsClient
-	Endpoints	EndpointsClient
-	Jobs		JobsClient
-	LimitRanges	LimitRangesClient
-	Namespaces	NamespacesClient
-	NetworkPolicies	NetworkPoliciesClient
-	Nodes		NodesClient
-	Pods		PodsClient
-	ReplicaSets	ReplicaSetsClient
-	ResourceQuotas	ResourceQuotasClient
-	RoleBindings	RoleBindingsClient
-	Roles		RolesClient
-	ServiceAccounts	ServiceAccountsClient
-	K8sServices	ServicesClient
-	StatefulSets	StatefulSetsClient
+	CronJobs        CronJobsClient
+	DaemonSets      DaemonSetsClient
+	Deployments     DeploymentsClient
+	Endpoints       EndpointsClient
+	Jobs            JobsClient
+	LimitRanges     LimitRangesClient
+	Namespaces      NamespacesClient
+	NetworkPolicies NetworkPoliciesClient
+	Nodes           NodesClient
+	Pods            PodsClient
+	ReplicaSets     ReplicaSetsClient
+	ResourceQuotas  ResourceQuotasClient
+	RoleBindings    RoleBindingsClient
+	Roles           RolesClient
+	ServiceAccounts ServiceAccountsClient
+	K8sServices     ServicesClient
+	StatefulSets    StatefulSetsClient
+	//PolicyV1beta1   *policyv1beta1.PolicyV1beta1Client
 }
 
 type CronJobsClient interface {

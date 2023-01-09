@@ -18,6 +18,8 @@ type Client struct {
 	paths    map[string]struct{}
 
 	Context string
+
+	KubeConfig clientcmd.ClientConfig
 }
 
 func (c *Client) K8sServices() K8sServices {
@@ -26,10 +28,11 @@ func (c *Client) K8sServices() K8sServices {
 
 func (c Client) CopyWithContext(k8sContext string) *Client {
 	return &Client{
-		services: c.services,
-		contexts: c.contexts,
-		paths:    c.paths,
-		Context:  k8sContext,
+		services:   c.services,
+		contexts:   c.contexts,
+		paths:      c.paths,
+		KubeConfig: c.KubeConfig,
+		Context:    k8sContext,
 	}
 }
 
@@ -88,10 +91,11 @@ func NewClient(ctx context.Context, k8sConfigFile string, k8sContextSlice []stri
 	}
 
 	c := Client{
-		services: make(map[string]K8sServices),
-		contexts: contexts,
-		Context:  contexts[0],
-		paths:    make(map[string]struct{}),
+		services:   make(map[string]K8sServices),
+		contexts:   contexts,
+		Context:    contexts[0],
+		paths:      make(map[string]struct{}),
+		KubeConfig: kubeConfig,
 	}
 
 	for _, ctxName := range contexts {
