@@ -18,6 +18,7 @@ func GenTables() []*schema.Table {
 		table_schema_generator.GenTableSchema(&apps.TableK8sAppsDeploymentsGenerator{}),
 		table_schema_generator.GenTableSchema(&batch.TableK8sBatchCronJobsGenerator{}),
 		table_schema_generator.GenTableSchema(&batch.TableK8sBatchJobsGenerator{}),
+
 		table_schema_generator.GenTableSchema(&core.TableK8sCoreLimitRangesGenerator{}),
 		table_schema_generator.GenTableSchema(&core.TableK8sCoreResourceQuotasGenerator{}),
 		table_schema_generator.GenTableSchema(&core.TableK8sCoreNamespacesGenerator{}),
@@ -26,6 +27,8 @@ func GenTables() []*schema.Table {
 		table_schema_generator.GenTableSchema(&core.TableK8sCoreServicesGenerator{}),
 		table_schema_generator.GenTableSchema(&core.TableK8sCorePodsGenerator{}),
 		table_schema_generator.GenTableSchema(&core.TableK8sCoreEndpointsGenerator{}),
+		table_schema_generator.GenTableSchema(&core.TableK8sCorePodsSecurityPolicyGenerator{}),
+
 		table_schema_generator.GenTableSchema(&networking.TableK8sNetworkingNetworkPoliciesGenerator{}),
 		table_schema_generator.GenTableSchema(&rbac.TableK8sRbacRoleBindingsGenerator{}),
 		table_schema_generator.GenTableSchema(&rbac.TableK8sRbacRolesGenerator{}),

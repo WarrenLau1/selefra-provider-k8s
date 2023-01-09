@@ -1,2 +1,3 @@
 .idea/*
 **/*.log
+/provider/provider_test.go
