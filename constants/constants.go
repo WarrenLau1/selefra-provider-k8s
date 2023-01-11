@@ -70,7 +70,7 @@ var (
     Ksioclientgokubernetestypedpolicyvbeta = "k8s.io/client-go/kubernetes/typed/policy/v1beta1"
     Constants_23 = ""
     Time = "time"
-    V = "v0.0.1"
+    V = "v0.0.7"
     Ksioclientgokubernetestypedappsv = "k8s.io/client-go/kubernetes/typed/apps/v1"
     PersistentVolumes = "PersistentVolumes"
     GetLogs = "GetLogs"
