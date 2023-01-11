@@ -1,32 +1,25 @@
 # Table: k8s_core_service_accounts
 
-## Primary Keys 
-
-```
-uid
-```
-
-
 ## Columns 
 
 |  Column Name   |  Data Type  | Uniq | Nullable | Description | 
 |  ----  | ----  | ----  | ----  | ---- | 
-| context | string | X | √ |  | 
-| kind | string | X | √ |  | 
-| api_version | string | X | √ |  | 
-| selefra_id | string | √ | √ | primary keys value md5 | 
-| name | string | X | √ |  | 
-| namespace | string | X | √ |  | 
+| labels | json | X | √ |  | 
+| annotations | json | X | √ |  | 
 | finalizers | string_array | X | √ |  | 
 | image_pull_secrets | json | X | √ |  | 
-| generation | int | X | √ |  | 
-| deletion_grace_period_seconds | int | X | √ |  | 
-| annotations | json | X | √ |  | 
-| secrets | json | X | √ |  | 
+| context | string | X | √ |  | 
+| uid | string | X | √ |  | 
+| kind | string | X | √ |  | 
+| name | string | X | √ |  | 
+| selefra_id | string | √ | √ | random id | 
+| generation | big_int | X | √ |  | 
+| deletion_grace_period_seconds | big_int | X | √ |  | 
 | automount_service_account_token | bool | X | √ |  | 
-| uid | string | √ | √ |  | 
+| namespace | string | X | √ |  | 
 | resource_version | string | X | √ |  | 
-| labels | json | X | √ |  | 
 | owner_references | json | X | √ |  | 
+| secrets | json | X | √ |  | 
+| api_version | string | X | √ |  | 
 
 

@@ -1,41 +1,149 @@
+
+
+
+
 package batch
 
+
+
+
+
+
+
 import (
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"testing"
+
+
+
+
+
+
+
+
 
 	"github.com/golang/mock/gomock"
 	"github.com/selefra/selefra-provider-k8s/faker"
-	"github.com/selefra/selefra-provider-k8s/k8sTesting"
+
+
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
-	"github.com/selefra/selefra-provider-k8s/k8s_client/mocks"
+
+
+
+
+	"github.com/selefra/selefra-provider-k8s/mocks"
+
+
+
+
+	resourcemock "github.com/selefra/selefra-provider-k8s/mocks/batch/v1"
 	"github.com/selefra/selefra-provider-k8s/table_schema_generator"
-	batchv1 "k8s.io/api/batch/v1"
+	resource "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+
+	"k8s.io/client-go/kubernetes"
 )
 
-func fakeCronJob(t *testing.T) batchv1.CronJob {
-	var job batchv1.CronJob
-	if err := faker.FakeObject(&job); err != nil {
+
+
+
+
+
+
+func createCronJobs(t *testing.T, ctrl *gomock.Controller) kubernetes.Interface {
+	r := resource.CronJob{}
+
+
+
+
+	if err := faker.FakeObject(&r); err != nil {
+
+
+
+
 		t.Fatal(err)
 	}
-	job.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	job.Spec.JobTemplate.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	job.Spec.JobTemplate.Spec.Template = k8sTesting.FakePodTemplateSpec(t)
-	return job
-}
 
-func createBatchCronJobs(t *testing.T, ctrl *gomock.Controller) k8s_client.K8sServices {
-	cronJobs := mocks.NewMockCronJobsClient(ctrl)
 
-	cronJobs.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
-		&batchv1.CronJobList{Items: []batchv1.CronJob{fakeCronJob(t)}},
-		nil,
+
+
+
+	r.Spec.JobTemplate = resource.JobTemplateSpec{}
+
+
+
+
+
+
+
+	resourceClient := resourcemock.NewMockCronJobInterface(ctrl)
+
+
+
+
+	resourceClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
+
+
+
+
+		&resource.CronJobList{Items: []resource.CronJob{r}}, nil,
+
+
 	)
-	return k8s_client.K8sServices{
-		CronJobs: cronJobs,
-	}
+
+
+
+
+
+
+
+
+
+	serviceClient := resourcemock.NewMockBatchV1Interface(ctrl)
+
+
+
+
+
+	serviceClient.EXPECT().CronJobs(constants.Constants_21).AnyTimes().Return(resourceClient)
+
+
+
+
+
+
+
+
+
+	cl := mocks.NewMockInterface(ctrl)
+
+
+	cl.EXPECT().BatchV1().AnyTimes().Return(serviceClient)
+
+
+
+	return cl
+
+
+
+
 }
 
-func TestBatchCronJobs(t *testing.T) {
-	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sBatchCronJobsGenerator{}), createBatchCronJobs, k8s_client.TestOptions{})
+
+
+func TestCronJobs(t *testing.T) {
+
+
+
+
+	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sBatchCronJobsGenerator{}), createCronJobs, k8s_client.TestOptions{})
+
+
+
+
 }
+
+
+
+

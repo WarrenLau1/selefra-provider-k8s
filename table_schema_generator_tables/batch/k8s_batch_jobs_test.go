@@ -1,35 +1,130 @@
+
+
+
+
 package batch
 
+
+
+
+
 import (
+	"github.com/selefra/selefra-provider-k8s/constants"
+
+
+
+
 	"testing"
 
+
+
+
+
+
+
+
+
 	"github.com/golang/mock/gomock"
+
+
 	"github.com/selefra/selefra-provider-k8s/faker"
-	"github.com/selefra/selefra-provider-k8s/k8sTesting"
+
+
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
-	"github.com/selefra/selefra-provider-k8s/k8s_client/mocks"
+	"github.com/selefra/selefra-provider-k8s/mocks"
+	resourcemock "github.com/selefra/selefra-provider-k8s/mocks/batch/v1"
 	"github.com/selefra/selefra-provider-k8s/table_schema_generator"
-	batchv1 "k8s.io/api/batch/v1"
+
+
+
+
+	resource "k8s.io/api/batch/v1"
+
+
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+
+	"k8s.io/client-go/kubernetes"
+
+
 )
 
-func createBatchJobs(t *testing.T, ctrl *gomock.Controller) k8s_client.K8sServices {
-	jobs := mocks.NewMockJobsClient(ctrl)
-	j := batchv1.Job{}
-	if err := faker.FakeObject(&j); err != nil {
+
+
+
+
+func createJobs(t *testing.T, ctrl *gomock.Controller) kubernetes.Interface {
+
+
+
+
+	r := resource.Job{}
+
+
+
+
+	if err := faker.FakeObject(&r); err != nil {
+
+
 		t.Fatal(err)
+
+
 	}
-	j.Spec.Template = k8sTesting.FakePodTemplateSpec(t)
-	j.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	j.Spec.Template.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	jobs.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
-		&batchv1.JobList{Items: []batchv1.Job{j}}, nil,
+
+
+
+	r.Spec.Template = corev1.PodTemplateSpec{}
+
+	resourceClient := resourcemock.NewMockJobInterface(ctrl)
+
+
+	resourceClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
+		&resource.JobList{Items: []resource.Job{r}}, nil,
+
+
 	)
-	return k8s_client.K8sServices{
-		Jobs: jobs,
-	}
+
+
+
+
+
+
+
+
+
+	serviceClient := resourcemock.NewMockBatchV1Interface(ctrl)
+
+
+
+
+
+	serviceClient.EXPECT().Jobs(constants.Constants_22).AnyTimes().Return(resourceClient)
+
+
+
+
+
+	cl := mocks.NewMockInterface(ctrl)
+	cl.EXPECT().BatchV1().AnyTimes().Return(serviceClient)
+
+	return cl
+
+
 }
 
-func TestBatchJobs(t *testing.T) {
-	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sBatchJobsGenerator{}), createBatchJobs, k8s_client.TestOptions{})
+
+
+
+
+
+
+func TestJobs(t *testing.T) {
+
+
+
+
+	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sBatchJobsGenerator{}), createJobs, k8s_client.TestOptions{})
+
+
 }

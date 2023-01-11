@@ -1,37 +1,115 @@
+
+
 package rbac
 
+
+
+
+
+
+
 import (
+
+
+	"github.com/selefra/selefra-provider-k8s/constants"
+
+
+
+
 	"testing"
 
+
+
+
+
 	"github.com/golang/mock/gomock"
+
+
+
+
 	"github.com/selefra/selefra-provider-k8s/faker"
-	"github.com/selefra/selefra-provider-k8s/k8sTesting"
+
+
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
-	"github.com/selefra/selefra-provider-k8s/k8s_client/mocks"
+
+
+	"github.com/selefra/selefra-provider-k8s/mocks"
+
+
+	resourcemock "github.com/selefra/selefra-provider-k8s/mocks/rbac/v1"
 	"github.com/selefra/selefra-provider-k8s/table_schema_generator"
-	v1 "k8s.io/api/rbac/v1"
+
+
+	resource "k8s.io/api/rbac/v1"
+
+
+
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+
+	"k8s.io/client-go/kubernetes"
 )
 
-func fakeRole(t *testing.T) *v1.Role {
-	r := v1.Role{}
+
+
+func createRoles(t *testing.T, ctrl *gomock.Controller) kubernetes.Interface {
+	r := resource.Role{}
 	if err := faker.FakeObject(&r); err != nil {
+
+
+
+
 		t.Fatal(err)
-	}
-	r.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	return &r
-}
 
-func createRbacRoles(t *testing.T, ctrl *gomock.Controller) k8s_client.K8sServices {
-	roles := mocks.NewMockRolesClient(ctrl)
-	roles.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
-		&v1.RoleList{Items: []v1.Role{*fakeRole(t)}}, nil,
+
+	}
+
+
+
+
+
+	resourceClient := resourcemock.NewMockRoleInterface(ctrl)
+	resourceClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
+		&resource.RoleList{Items: []resource.Role{r}}, nil,
+
+
 	)
-	return k8s_client.K8sServices{
-		Roles: roles,
-	}
+
+
+
+	serviceClient := resourcemock.NewMockRbacV1Interface(ctrl)
+
+
+
+
+
+	serviceClient.EXPECT().Roles(constants.Constants_48).AnyTimes().Return(resourceClient)
+
+
+
+
+
+	cl := mocks.NewMockInterface(ctrl)
+
+
+
+
+	cl.EXPECT().RbacV1().AnyTimes().Return(serviceClient)
+
+
+
+
+
+
+
+	return cl
+
+
 }
 
-func TestRbacRoles(t *testing.T) {
-	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sRbacRolesGenerator{}), createRbacRoles, k8s_client.TestOptions{})
+
+
+func TestRoles(t *testing.T) {
+	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sRbacRolesGenerator{}), createRoles, k8s_client.TestOptions{})
 }

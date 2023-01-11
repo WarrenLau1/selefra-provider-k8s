@@ -1,12 +1,14 @@
 package k8s_client
 
 import (
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"context"
 	"github.com/golang/mock/gomock"
 	"github.com/selefra/selefra-provider-sdk/provider"
 	"github.com/selefra/selefra-provider-sdk/provider/schema"
 	"github.com/selefra/selefra-provider-sdk/test_helper"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/kubernetes"
 	"testing"
 )
 
@@ -14,26 +16,26 @@ type TestOptions struct {
 	SkipEmptyJsonB bool
 }
 
-func MockTestHelper(t *testing.T, table *schema.Table, builder func(*testing.T, *gomock.Controller) K8sServices, _ TestOptions) {
+func MockTestHelper(t *testing.T, table *schema.Table, builder func(*testing.T, *gomock.Controller) kubernetes.Interface, _ TestOptions) {
 	ctrl := gomock.NewController(t)
 	testProvider := newTestProvider(t, ctrl, table, builder)
-	config := "test : test"
-	test_helper.RunProviderPullTables(testProvider, config, "./", "*")
+	config := constants.Testtest
+	test_helper.RunProviderPullTables(testProvider, config, constants.Constants_8, constants.Constants_9)
 }
 
-func newTestProvider(t *testing.T, ctrl *gomock.Controller, table *schema.Table, builder func(*testing.T, *gomock.Controller) K8sServices) *provider.Provider {
+func newTestProvider(t *testing.T, ctrl *gomock.Controller, table *schema.Table, builder func(*testing.T, *gomock.Controller) kubernetes.Interface) *provider.Provider {
 	return &provider.Provider{
-		Name:		"k8s",
-		Version:	"v0.0.1",
+		Name:		constants.Ks,
+		Version:	constants.V,
 		TableList:	[]*schema.Table{table},
 		ClientMeta: schema.ClientMeta{
 			InitClient: func(ctx context.Context, clientMeta *schema.ClientMeta, config *viper.Viper) ([]any, *schema.Diagnostics) {
 
 				services := builder(t, ctrl)
 				client := &Client{
-					Context: "testContext",
+					Context: constants.TestContext,
 				}
-				client.SetServices(map[string]K8sServices{"testContext": services})
+				client.SetServices(map[string]kubernetes.Interface{constants.TestContext: services})
 				return []any{client}, nil
 			},
 		},
