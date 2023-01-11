@@ -1,37 +1,137 @@
+
+
+
+
 package rbac
 
+
+
+
+
 import (
+
+
+
+
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"testing"
+
+
+
+
+
+
+
+
 
 	"github.com/golang/mock/gomock"
 	"github.com/selefra/selefra-provider-k8s/faker"
-	"github.com/selefra/selefra-provider-k8s/k8sTesting"
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
-	"github.com/selefra/selefra-provider-k8s/k8s_client/mocks"
+	"github.com/selefra/selefra-provider-k8s/mocks"
+	resourcemock "github.com/selefra/selefra-provider-k8s/mocks/rbac/v1"
+
+
+
+
 	"github.com/selefra/selefra-provider-k8s/table_schema_generator"
-	v1 "k8s.io/api/rbac/v1"
+
+
+	resource "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+
+	"k8s.io/client-go/kubernetes"
 )
 
-func fakeRoleBinding(t *testing.T) *v1.RoleBinding {
-	r := v1.RoleBinding{}
+
+
+
+
+func createRoleBindings(t *testing.T, ctrl *gomock.Controller) kubernetes.Interface {
+	r := resource.RoleBinding{}
+
+
+
+
 	if err := faker.FakeObject(&r); err != nil {
+
+
 		t.Fatal(err)
-	}
-	r.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	return &r
-}
 
-func createRbacRoleBindings(t *testing.T, ctrl *gomock.Controller) k8s_client.K8sServices {
-	roles := mocks.NewMockRoleBindingsClient(ctrl)
-	roles.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
-		&v1.RoleBindingList{Items: []v1.RoleBinding{*fakeRoleBinding(t)}}, nil,
+
+	}
+
+
+
+
+
+
+
+	resourceClient := resourcemock.NewMockRoleBindingInterface(ctrl)
+	resourceClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
+
+
+
+
+		&resource.RoleBindingList{Items: []resource.RoleBinding{r}}, nil,
+
+
+
+
 	)
-	return k8s_client.K8sServices{
-		RoleBindings: roles,
-	}
+
+
+
+
+
+	serviceClient := resourcemock.NewMockRbacV1Interface(ctrl)
+
+
+
+
+
+	serviceClient.EXPECT().RoleBindings(constants.Constants_47).AnyTimes().Return(resourceClient)
+
+
+
+
+
+	cl := mocks.NewMockInterface(ctrl)
+
+
+
+
+	cl.EXPECT().RbacV1().AnyTimes().Return(serviceClient)
+
+
+
+
+
+
+
+
+
+	return cl
+
+
+
+
 }
 
-func TestRbacRoleBindings(t *testing.T) {
-	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sRbacRoleBindingsGenerator{}), createRbacRoleBindings, k8s_client.TestOptions{})
+
+
+
+
+func TestRoleBindings(t *testing.T) {
+
+
+	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sRbacRoleBindingsGenerator{}), createRoleBindings, k8s_client.TestOptions{})
+
+
+
+
 }
+
+
+
+

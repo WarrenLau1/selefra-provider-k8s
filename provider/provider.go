@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"context"
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
 	"strings"
@@ -10,23 +11,22 @@ import (
 	"github.com/spf13/viper"
 )
 
-const Version = "v0.0.1"
+var Version = constants.V
 
 func GetProvider() *provider.Provider {
 	return &provider.Provider{
-		Name:      "k8s",
-		Version:   Version,
-		TableList: GenTables(),
+		Name:		constants.Ks,
+		Version:	Version,
+		TableList:	GenTables(),
 		ClientMeta: schema.ClientMeta{
 			InitClient: func(ctx context.Context, clientMeta *schema.ClientMeta, config *viper.Viper) ([]any, *schema.Diagnostics) {
 
 				diagnostics := schema.NewDiagnostics()
 
-				//k8sConfigPath := config.GetString("providers.0.config-path")
-				k8sConfigPath := config.GetString("config-path")
-				if k8sConfigPath != "" {
-					if !strings.HasPrefix(k8sConfigPath, "/") && !strings.HasPrefix(k8sConfigPath, "./") {
-						return nil, diagnostics.AddErrorMsg("config-path must start with / or ./, %s is not ok", k8sConfigPath)
+				k8sConfigPath := config.GetString(constants.Configpath)
+				if k8sConfigPath != constants.Constants_10 {
+					if !strings.HasPrefix(k8sConfigPath, constants.Constants_11) && !strings.HasPrefix(k8sConfigPath, constants.Constants_12) {
+						return nil, diagnostics.AddErrorMsg(constants.Configpathmuststartwithorsisnotok, k8sConfigPath)
 					}
 				}
 				client, err := k8s_client.NewClient(ctx, k8sConfigPath, nil)
@@ -48,9 +48,9 @@ func GetProvider() *provider.Provider {
 		},
 		TransformerMeta: schema.TransformerMeta{
 			DefaultColumnValueConvertorBlackList: []string{
-				"",
+				constants.Constants_13,
 			},
-			DataSourcePullResultAutoExpand: true,
+			DataSourcePullResultAutoExpand:	true,
 		},
 		ErrorsHandlerMeta: schema.ErrorsHandlerMeta{
 			IgnoredErrors: []schema.IgnoredError{schema.IgnoredErrorOnSaveResult},

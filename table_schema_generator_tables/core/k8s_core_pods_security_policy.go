@@ -40,7 +40,7 @@ func (x *TableK8sCorePodsSecurityPolicyGenerator) GetDataSource() *schema.DataSo
 	return &schema.DataSource{
 		Pull: func(ctx context.Context, clientMeta *schema.ClientMeta, client any, task *schema.DataSourcePullTask, resultChannel chan<- any) *schema.Diagnostics {
 			diagnostics := schema.NewDiagnostics()
-			k8sClient := client.(*k8s_client.Client).K8sServices().Client
+			k8sClient := client.(*k8s_client.Client).Client()
 
 			var err error
 			var response *v1beta1.PodSecurityPolicyList

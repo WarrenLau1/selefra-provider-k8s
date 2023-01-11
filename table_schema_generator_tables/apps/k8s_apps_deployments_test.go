@@ -1,45 +1,119 @@
 package apps
 
+
+
+
+
+
+
+
+
 import (
+
+
+
+
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"testing"
 
+
+
+
+
+
+
 	"github.com/golang/mock/gomock"
+
+
 	"github.com/selefra/selefra-provider-k8s/faker"
-	"github.com/selefra/selefra-provider-k8s/k8sTesting"
 	"github.com/selefra/selefra-provider-k8s/k8s_client"
-	"github.com/selefra/selefra-provider-k8s/k8s_client/mocks"
+
+
+
+
+	mocks "github.com/selefra/selefra-provider-k8s/mocks"
+
+
+	resourcemock "github.com/selefra/selefra-provider-k8s/mocks/apps/v1"
 	"github.com/selefra/selefra-provider-k8s/table_schema_generator"
-	appsv1 "k8s.io/api/apps/v1"
+
+
+	resource "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/client-go/kubernetes"
 )
 
-func fakeAppsDeployment(t *testing.T) appsv1.Deployment {
-	var deployment appsv1.Deployment
-	if err := faker.FakeObject(&deployment); err != nil {
+
+
+func createDeployments(t *testing.T, ctrl *gomock.Controller) kubernetes.Interface {
+	r := resource.Deployment{}
+
+
+	if err := faker.FakeObject(&r); err != nil {
 		t.Fatal(err)
+
+
 	}
 
-	intOrStr1 := intstr.FromInt(100)
-	intOrStr2 := intstr.FromInt(100)
-	deployment.Spec.Strategy.RollingUpdate.MaxSurge = &intOrStr1
-	deployment.Spec.Strategy.RollingUpdate.MaxUnavailable = &intOrStr2
 
-	deployment.Spec.Template = k8sTesting.FakePodTemplateSpec(t)
-	deployment.ManagedFields = []metav1.ManagedFieldsEntry{k8sTesting.FakeManagedFields(t)}
-	return deployment
-}
 
-func createDeployments(t *testing.T, ctrl *gomock.Controller) k8s_client.K8sServices {
-	deploymentsClient := mocks.NewMockDeploymentsClient(ctrl)
-	deploymentsClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
-		&appsv1.DeploymentList{Items: []appsv1.Deployment{fakeAppsDeployment(t)}}, nil,
+
+
+	r.Spec.Template = corev1.PodTemplateSpec{}
+	r.Spec.Strategy = resource.DeploymentStrategy{}
+
+
+
+	resourceClient := resourcemock.NewMockDeploymentInterface(ctrl)
+
+
+
+
+	resourceClient.EXPECT().List(gomock.Any(), metav1.ListOptions{}).AnyTimes().Return(
+
+
+		&resource.DeploymentList{Items: []resource.Deployment{r}}, nil,
+
+
+
+
 	)
-	return k8s_client.K8sServices{
-		Deployments: deploymentsClient,
-	}
+
+
+
+	serviceClient := resourcemock.NewMockAppsV1Interface(ctrl)
+
+
+
+	serviceClient.EXPECT().Deployments(constants.Constants_17).AnyTimes().Return(resourceClient)
+
+
+
+
+
+
+
+	cl := mocks.NewMockInterface(ctrl)
+	cl.EXPECT().AppsV1().AnyTimes().Return(serviceClient)
+
+
+
+
+
+	return cl
 }
+
+
 
 func TestDeployments(t *testing.T) {
+
+
+
+
 	k8s_client.MockTestHelper(t, table_schema_generator.GenTableSchema(&TableK8sAppsDeploymentsGenerator{}), createDeployments, k8s_client.TestOptions{})
 }
+
+
+
+

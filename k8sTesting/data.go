@@ -1,6 +1,7 @@
 package k8sTesting
 
 import (
+	"github.com/selefra/selefra-provider-k8s/constants"
 	"github.com/selefra/selefra-provider-k8s/faker"
 	"testing"
 
@@ -13,7 +14,7 @@ import (
 func FakeThroughPointers(t *testing.T, ptrs ...interface{}) {
 	for i, ptr := range ptrs {
 		if err := faker.FakeObject(ptr); err != nil {
-			t.Fatalf("%v %v", i, ptr)
+			t.Fatalf(constants.Vv, i, ptr)
 		}
 	}
 }
@@ -46,7 +47,7 @@ func FakeManagedFields(t *testing.T) metav1.ManagedFieldsEntry {
 		t.Fatal(err)
 	}
 	m.FieldsV1 = &metav1.FieldsV1{
-		Raw: []byte("{\"test\":1}"),
+		Raw: []byte(constants.Test),
 	}
 	return m
 }
@@ -80,20 +81,20 @@ func FakeNode(t *testing.T) corev1.Node {
 	)
 	node.Status.Capacity = *FakeResourceList(t)
 	node.Status.Allocatable = *FakeResourceList(t)
-	node.Spec.PodCIDR = "192.168.1.0/24"
-	node.Spec.PodCIDRs = []string{"192.168.1.0/24"}
+	node.Spec.PodCIDR = constants.Constants_1
+	node.Spec.PodCIDRs = []string{constants.Constants_2}
 	node.Status.Addresses = []corev1.NodeAddress{
 		{
 			Type:		corev1.NodeHostName,
-			Address:	"testname",
+			Address:	constants.Testname,
 		},
 		{
 			Type:		corev1.NodeInternalIP,
-			Address:	"fd00::1",
+			Address:	constants.Fd,
 		},
 		{
 			Type:		corev1.NodeExternalIP,
-			Address:	"192.168.2.1",
+			Address:	constants.Constants_3,
 		},
 	}
 	return node
@@ -223,9 +224,9 @@ func FakePod(t *testing.T) corev1.Pod {
 	)
 	pod.Spec = FakePodSpec(t)
 
-	pod.Status.HostIP = "192.168.1.2"
-	pod.Status.PodIP = "192.168.1.1"
-	pod.Status.PodIPs = []corev1.PodIP{{IP: "192.168.1.1"}}
+	pod.Status.HostIP = constants.Constants_4
+	pod.Status.PodIP = constants.Constants_5
+	pod.Status.PodIPs = []corev1.PodIP{{IP: constants.Constants_6}}
 	return pod
 }
 

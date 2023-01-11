@@ -28,17 +28,14 @@ func (x *TableK8sNetworkingNetworkPoliciesGenerator) GetVersion() uint64 {
 }
 
 func (x *TableK8sNetworkingNetworkPoliciesGenerator) GetOptions() *schema.TableOptions {
-	return &schema.TableOptions{
-		PrimaryKeys: []string{
-			"uid",
-		},
-	}
+	return &schema.TableOptions{}
 }
 
 func (x *TableK8sNetworkingNetworkPoliciesGenerator) GetDataSource() *schema.DataSource {
 	return &schema.DataSource{
 		Pull: func(ctx context.Context, clientMeta *schema.ClientMeta, client any, task *schema.DataSourcePullTask, resultChannel chan<- any) *schema.Diagnostics {
-			cl := client.(*k8s_client.Client).K8sServices().NetworkPolicies
+			cl := client.(*k8s_client.Client).Client().NetworkingV1().NetworkPolicies("")
+
 			opts := metav1.ListOptions{}
 			for {
 				result, err := cl.List(ctx, opts)
@@ -62,44 +59,44 @@ func (x *TableK8sNetworkingNetworkPoliciesGenerator) GetExpandClientTask() func(
 
 func (x *TableK8sNetworkingNetworkPoliciesGenerator) GetColumns() []*schema.Column {
 	return []*schema.Column{
-		table_schema_generator.NewColumnBuilder().ColumnName("api_version").ColumnType(schema.ColumnTypeString).
-			Extractor(column_value_extractor.StructSelector("APIVersion")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("deletion_grace_period_seconds").ColumnType(schema.ColumnTypeInt).
-			Extractor(column_value_extractor.StructSelector("DeletionGracePeriodSeconds")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("finalizers").ColumnType(schema.ColumnTypeStringArray).
-			Extractor(column_value_extractor.StructSelector("Finalizers")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("context").ColumnType(schema.ColumnTypeString).
-			Extractor(k8s_client.ContextExtractor()).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("kind").ColumnType(schema.ColumnTypeString).
-			Extractor(column_value_extractor.StructSelector("Kind")).Build(),
 		table_schema_generator.NewColumnBuilder().ColumnName("namespace").ColumnType(schema.ColumnTypeString).
 			Extractor(column_value_extractor.StructSelector("Namespace")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("spec_ingress").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("Spec.Ingress")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("context").ColumnType(schema.ColumnTypeString).
+			Extractor(k8s_client.ContextExtractor()).Build(),
 		table_schema_generator.NewColumnBuilder().ColumnName("resource_version").ColumnType(schema.ColumnTypeString).
 			Extractor(column_value_extractor.StructSelector("ResourceVersion")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("generation").ColumnType(schema.ColumnTypeInt).
+		table_schema_generator.NewColumnBuilder().ColumnName("owner_references").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("OwnerReferences")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("finalizers").ColumnType(schema.ColumnTypeStringArray).
+			Extractor(column_value_extractor.StructSelector("Finalizers")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("selefra_id").ColumnType(schema.ColumnTypeString).SetUnique().Description("random id").
+			Extractor(column_value_extractor.UUID()).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("name").ColumnType(schema.ColumnTypeString).
+			Extractor(column_value_extractor.StructSelector("Name")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("api_version").ColumnType(schema.ColumnTypeString).
+			Extractor(column_value_extractor.StructSelector("APIVersion")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("generation").ColumnType(schema.ColumnTypeBigInt).
 			Extractor(column_value_extractor.StructSelector("Generation")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("deletion_grace_period_seconds").ColumnType(schema.ColumnTypeBigInt).
+			Extractor(column_value_extractor.StructSelector("DeletionGracePeriodSeconds")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("labels").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("Labels")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("spec_egress").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("Spec.Egress")).Build(),
 		table_schema_generator.NewColumnBuilder().ColumnName("spec_policy_types").ColumnType(schema.ColumnTypeStringArray).
 			Extractor(column_value_extractor.StructSelector("Spec.PolicyTypes")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("kind").ColumnType(schema.ColumnTypeString).
+			Extractor(column_value_extractor.StructSelector("Kind")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("annotations").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("Annotations")).Build(),
+		table_schema_generator.NewColumnBuilder().ColumnName("spec_pod_selector").ColumnType(schema.ColumnTypeJSON).
+			Extractor(column_value_extractor.StructSelector("Spec.PodSelector")).Build(),
 		table_schema_generator.NewColumnBuilder().ColumnName("status_conditions").ColumnType(schema.ColumnTypeJSON).
 			Extractor(column_value_extractor.StructSelector("Status.Conditions")).Build(),
 		table_schema_generator.NewColumnBuilder().ColumnName("uid").ColumnType(schema.ColumnTypeString).
 			Extractor(column_value_extractor.StructSelector("UID")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("owner_references").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("OwnerReferences")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("spec_egress").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("Spec.Egress")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("annotations").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("Annotations")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("labels").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("Labels")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("spec_pod_selector").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("Spec.PodSelector")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("spec_ingress").ColumnType(schema.ColumnTypeJSON).
-			Extractor(column_value_extractor.StructSelector("Spec.Ingress")).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("selefra_id").ColumnType(schema.ColumnTypeString).SetUnique().Description("primary keys value md5").
-			Extractor(column_value_extractor.PrimaryKeysID()).Build(),
-		table_schema_generator.NewColumnBuilder().ColumnName("name").ColumnType(schema.ColumnTypeString).
-			Extractor(column_value_extractor.StructSelector("Name")).Build(),
 	}
 }
 
