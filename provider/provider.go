@@ -38,9 +38,7 @@ func GetProvider() *provider.Provider {
 		},
 		ConfigMeta: provider.ConfigMeta{
 			GetDefaultConfigTemplate: func(ctx context.Context) string {
-				return `#providers:
-#    - name: k8s
-#      config-path: `
+				return `# config-path: <YOUR_K8S_CONFIG_FILE>`
 			},
 			Validation: func(ctx context.Context, config *viper.Viper) *schema.Diagnostics {
 				return nil
